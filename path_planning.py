@@ -47,10 +47,9 @@ def print_matrix(matrix) :
 		print(("[{0}]".format(', '.join(map(str, matrix[row])))))
 
 #Traverse rows left to right
-def scan_right(matrix, curr_position, mc):
-    count = 0
-    while count != num_cols:
-        count += 1
+def scan_right(matrix, curr_position, num_cols, mc):
+    for i in range(num_cols):
+	curr_position[1] = i #count forwards
         if SS[curr_position[0]][curr_position[1]] == 'X':
             mc.fwd_bwd(curr_speed, 1, 'fwd') #dur will be how long it takes to traverse 1 grid
             SS[curr_position[0]][curr_position[1]] = 'O'
@@ -58,40 +57,32 @@ def scan_right(matrix, curr_position, mc):
             print('\n')
         if SS[curr_position[0]][curr_position[1]] == 'E':
             collision_avoidance(curr_position)
-        if curr_position[1] != num_cols - 1:
-            curr_position[1] += 1
 
 #Traverse rows right to left
 def scan_left(matrix, curr_position, mc):
-    count = 0
-    while count != num_cols:
-        count += 1
+    for i in range(num_cols):
+        curr_position[1] = 9-i #count backwards
         if SS[curr_position[0]][curr_position[1]] == 'X':
             mc.fwd_bwd(curr_speed, 1, 'fwd') #dur will be how long it takes to traverse 1 grid
             SS[curr_position[0]][curr_position[1]] = 'O'
             print_matrix(SS)
             print('\n')
-        if curr_position[1] != 0:
-            curr_position[1] -= 1
 
 #Move up by 1 after traversing a row
 def wander(matrix, mc, curr_position):
-    count = 0
-    while (count != num_rows):
+    for i in range(num_rows):
         if (curr_position[0] % 2 == 0): #move right every even row
             mc.pivot_right_left(1, 'right') #duration will need to be however long for 90deg
             mc.fwd_bwd(curr_speed, 1, 'fwd')
             mc.pivot_right_left(1, 'right') #duration will need to be however long for 90deg
-            scan_right(matrix, curr_position, mc)
+            scan_right(matrix, curr_position, num_cols, mc)
             curr_position[0] += 1
-            count += 1
         else:
             mc.pivot_right_left(1, 'left')    #duration will need to be however long for 90deg
             mc.fwd_bwd(curr_speed, 1, 'fwd')
             mc.pivot_right_left(1, 'left')    #duration will need to be however long for 90deg
-            scan_left(matrix, curr_position, mc)
+            scan_left(matrix, curr_position, num_cols, mc)
             curr_position[0] += 1
-            count += 1
 
 #Want to go around known obstacles, under it, where we have already been
 # Edge cases are if obstacle in first or last column, or top row
